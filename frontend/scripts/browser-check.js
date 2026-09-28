@@ -93,7 +93,9 @@ async function cdp() {
         }
         if (e.method === 'Log.entryAdded' && e.params.entry.level === 'error') {
           // The deliberate wrong-password test produces one expected 401.
-          const expected = /401 \(Unauthorized\)/.test(e.params.entry.text || '')
+          // Match on the status code rather than Chrome's reason phrase, which
+          // varies ("401 (Unauthorized)" locally vs "401 ()" behind a proxy).
+          const expected = /\b401\b/.test(e.params.entry.text || '')
             && /\/api\/auth\/login/.test(e.params.entry.url || '');
           if (!expected) out.push(`log: ${e.params.entry.text} ${e.params.entry.url || ''}`);
         }
@@ -185,6 +187,13 @@ const check = (name, ok, extra) => {
     ]) {
       await b.goto(APP + path);
       await b.waitFor(`document.body.innerText.includes(${JSON.stringify(marker)})`, { label: marker });
+      // The heading renders before the table data arrives. Against a remote
+      // API (Render free tier sleeps, then takes ~1s to wake) the table is
+      // often still empty at this point, so wait for rows to actually land
+      // instead of racing the fetch.
+      await b
+        .waitFor(`document.querySelectorAll('tbody tr').length > 0`, { label: `${path} table rows`, timeout: 45000 })
+        .catch(() => {});
       const t = await b.evalJs(`document.body.innerText.includes(${JSON.stringify(marker)})`);
       const rows = await b.evalJs(`document.querySelectorAll('tbody tr').length`);
       check(`${path} renders "${marker}" with data`, t.value === true && rows.value > 0, { marker: t.value, rows: rows.value });
