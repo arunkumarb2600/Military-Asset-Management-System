@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Military Asset Management System — Project Report</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 10.2pt; line-height: 1.5; color: #16202b; margin: 0;
+  }
+  h1, h2, h3, h4 { color: #0f2a47; margin: 0 0 6pt 0; page-break-after: avoid; }
+  h1 { font-size: 22pt; letter-spacing: -0.3pt; }
+  h2 {
+    font-size: 14pt; border-bottom: 2px solid #0f2a47; padding-bottom: 3pt;
+    margin-top: 18pt;
+  }
+  h3 { font-size: 11.5pt; margin-top: 12pt; color: #17456f; }
+  h4 { font-size: 10.5pt; margin-top: 10pt; }
+  p { margin: 0 0 6pt 0; }
+  ul, ol { margin: 0 0 7pt 0; padding-left: 16pt; }
+  li { margin-bottom: 2.5pt; }
+  code, .mono {
+    font-family: "Consolas", "Courier New", monospace; font-size: 9pt;
+    background: #eef2f7; padding: 1px 4px; border-radius: 3px;
+  }
+  pre {
+    background: #12283f; color: #e8f1fa; padding: 8pt 10pt; border-radius: 5px;
+    font-family: "Consolas", "Courier New", monospace; font-size: 8.6pt;
+    line-height: 1.45; overflow: visible; white-space: pre-wrap;
+    page-break-inside: avoid;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+  table {
+    width: 100%; border-collapse: collapse; margin: 6pt 0 10pt 0;
+    font-size: 8.9pt; page-break-inside: avoid;
+  }
+  th {
+    background: #0f2a47; color: #fff; text-align: left; padding: 4.5pt 6pt;
+    font-weight: 600; border: 1px solid #0f2a47;
+  }
+  td { padding: 4pt 6pt; border: 1px solid #c9d4e0; vertical-align: top; }
+  tr:nth-child(even) td { background: #f4f7fb; }
+  .cover { text-align: center; padding-top: 40pt; page-break-after: always; }
+  .cover .kicker { letter-spacing: 3pt; font-size: 9pt; color: #55708c; text-transform: uppercase; }
+  .cover h1 { font-size: 30pt; margin: 10pt 0 4pt 0; }
+  .cover .sub { font-size: 12.5pt; color: #3a5675; margin-bottom: 26pt; }
+  .cover .rule { height: 3px; width: 120pt; background: #1d6fb8; margin: 0 auto 26pt auto; }
+  .cover .meta { font-size: 10pt; color: #40566e; line-height: 1.9; }
+  .cover .meta b { color: #0f2a47; }
+  .badge {
+    display: inline-block; background: #e6f4ea; color: #17603a; font-weight: 600;
+    border: 1px solid #9bd0b3; border-radius: 12pt; padding: 1.5pt 9pt;
+    font-size: 8.6pt; margin: 2pt 3pt 2pt 0;
+  }
+  .callout {
+    background: #eef5fc; border-left: 3.5pt solid #1d6fb8; padding: 7pt 10pt;
+    margin: 8pt 0; border-radius: 0 4px 4px 0; page-break-inside: avoid;
+  }
+  .callout.warn { background: #fdf4e6; border-left-color: #c9811a; }
+  .callout.ok { background: #e9f7ef; border-left-color: #1f8a4c; }
+  .callout .t { font-weight: 700; color: #0f2a47; display: block; margin-bottom: 2pt; }
+  figure { margin: 8pt 0 12pt 0; page-break-inside: avoid; text-align: center; }
+  figure img { max-width: 100%; border: 1px solid #b9c6d4; border-radius: 4px; }
+  figcaption { font-size: 8.4pt; color: #55708c; margin-top: 3pt; font-style: italic; }
+  .two { display: flex; gap: 10pt; }
+  .two > div { flex: 1; }
+  .tag { font-size: 8pt; color: #fff; border-radius: 3px; padding: 1pt 5pt; font-weight: 600; }
+  .t-red { background: #b03a2e; } .t-amb { background: #b9781a; } .t-grn { background: #1f8a4c; }
+  .pb { page-break-before: always; }
+  .foot-note { font-size: 8.6pt; color: #55708c; font-style: italic; }
+  code.small { font-size: 8.4pt; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="kicker">Final Year Project &nbsp;•&nbsp; Web Application Development</div>
+  <h1>Military Asset Management<br>System</h1>
+  <div class="sub">Transparent tracking of military assets across multiple bases</div>
+  <div class="rule"></div>
+  <div class="meta">
+    <b>Stack</b> &nbsp; React 18 (Vite) · Node.js · Express · SQLite · JWT<br>
+    <b>Features</b> &nbsp; Opening / Closing Balance · Net Movement · Purchases · Transfers · Assignments · Expenditures · RBAC · Audit Logging<br>
+    <b>Quality</b> &nbsp; <span class="badge">77 / 77 API tests pass</span> <span class="badge">39 / 39 browser tests pass</span>
+  </div>
+</div>
+
+<h2>1. Project Overview</h2>
+
+<h3>1.1 Description</h3>
+<p>
+The Military Asset Management System (MAMS) is a web application that lets authorised staff
+record and monitor the complete lifecycle of military assets — weapons, vehicles, ammunition
+and equipment — as they move through and out of a chain of bases. The system replaces
+paper registers and ad-hoc spreadsheets, which are slow to update, easy to lose and
+impossible to audit, with a single authoritative database and a live dashboard.
+</p>
+<p>
+Every quantity shown in the interface is derived from a single append-only stock ledger.
+Purchases, inter-base transfers, asset assignments and write-offs all post signed ledger
+entries, and the closing balance of any base is simply the net sum of those entries. This
+makes the headline figures impossible to disagree with the underlying transaction records,
+which is the property that makes the system trustworthy for accountability purposes.
+</p>
+<p>The application serves three clearly separated roles:</p>
+<ul>
+  <li><b>Administrator</b> — full visibility of every base, user management and the audit log.</li>
+  <li><b>Base Commander</b> — full transactional control over the base he/she commands.</li>
+  <li><b>Logistics Officer</b> — purchasing and transfers only, within their assigned base.</li>
+</ul>
+
+<h3>1.2 Assumptions</h3>
+<p>The following assumptions were made during development. They shape the design and would be
+revisited with a real user base.</p>
+<ol>
+  <li><b>Base-scoped roles.</b> A user is either global (Administrator) or tied to exactly one base.
+      Most real forces also have regional command tiers; this build models the single-base
+      tier only.</li>
+  <li><b>Transfers take time.</b> Stock dispatched from one base is not available at the
+      destination until the transfer is marked <i>received</i>. In-transit stock is therefore
+      visible but not counted as a destination balance.</li>
+  <li><b>Assets are homogeneous per type.</b> Any quantity of "5.56mm ammunition" is fungible with
+      any other, so lots, serials and condition grades are not individually tracked. Serialised
+      high-value items (a single rifle) would need a unit-identity table.</li>
+  <li><b>Expenditure is reported against an assignment.</b> Ammunition issued to a platoon and
+      then fired is recorded against that assignment. A write-off with no assignment
+      (spoilage, loss) is a <i>direct expenditure</i>.</li>
+  <li><b>Opening balances are supplied per base and equipment type per period.</b> The system
+      consumes them; it does not calculate them historically.</li>
+  <li><b>Stock documents are immutable.</b> Purchases and transfers are never deleted — they are
+      corrected by counter-transactions, so the audit trail stays intact.</li>
+  <li><b>Financial values are informational.</b> Purchase values are recorded and totalled, but
+      no currency conversion or accounting journal is modelled.</li>
+  <li><b>Single language (English), single time basis (UTC).</b> Dates are stored as ISO-8601 text.</li>
+</ol>
+
+<h3>1.3 Limitations</h3>
+<p>This is a deliberately simple, self-contained build. The following are known and
+intentional limits, each with a clear path to production.</p>
+<table>
+<tr><th style="width:31%">Limitation</th><th>Effect</th><th style="width:31%">How it would be fixed</th></tr>
+<tr>
+  <td><b>SQLite is a local file</b></td>
+  <td>Fine for one server. On a free ephemeral host (e.g. Render's free tier) the disk is wiped on a cold start, so demo data is re-seeded.</td>
+  <td>Attach a persistent disk, or port the schema to PostgreSQL. Only <code>db.js</code> and the SQL in the routes would change.</td>
+</tr>
+<tr>
+  <td><b>JWT is stateless</b></td>
+  <td>There is no server-side session, so a deactivated user keeps their token until it expires (8h).</td>
+  <td>Add a token-version or session table checked on each request, or shorten the expiry.</td>
+</tr>
+<tr>
+  <td><b>No login rate-limiting</b></td>
+  <td>Password guessing is not throttled at the application layer.</td>
+  <td>Add a per-IP token bucket (e.g. <code>express-rate-limit</code>) in front of <code>/auth/login</code>.</td>
+</tr>
+<tr>
+  <td><b>No CSRF token</b></td>
+  <td>Safe as built, because the API is stateless and authenticates with a bearer header, not a cookie.</td>
+  <td>If cookies are introduced, add CSRF protection at the same time.</td>
+</tr>
+<tr>
+  <td><b>No document attachments</b></td>
+  <td>Purchase invoices and transfer manifests cannot be uploaded.</td>
+  <td>Add an object-storage upload endpoint and store the key on the purchase/transfer row.</td>
+</tr>
+<tr>
+  <td><b>No notifications</b></td>
+  <td>A commander is not emailed when a transfer is dispatched or overdue.</td>
+  <td>Add a background worker and an email/SMS provider.</td>
+</tr>
+<tr>
+  <td><b>No offline / mobile app</b></td>
+  <td>Field use requires connectivity; the UI is responsive but browser-based.</td>
+  <td>Wrap the frontend in a PWA or Capacitor shell with a local queue.</td>
+</tr>
+</table>
+
+<h2 class="pb">2. Technology Stack &amp; Architecture</h2>
+
+<h3>2.1 Technology stack</h3>
+<table>
+<tr><th style="width:20%">Layer</th><th style="width:30%">Technology</th><th>Reason for the choice</th></tr>
+<tr><td>Frontend</td><td>React 18 + Vite 5</td><td>Fast dev server, small production bundles, component model suits a forms/dashboard application.</td></tr>
+<tr><td>Routing</td><td>react-router-dom 6</td><td>Client-side routes with protected-route guards and per-role page visibility.</td></tr>
+<tr><td>Styling</td><td>Hand-written CSS</td><td>No framework dependency; a small custom design system keeps the bundle tiny and the look consistent.</td></tr>
+<tr><td>Backend</td><td>Node.js + Express 4</td><td>Minimal, widely understood HTTP layer; the route handlers map 1:1 to the API reference.</td></tr>
+<tr><td>Database</td><td>SQLite via better-sqlite3</td><td>Zero-infrastructure, single file, synchronous API that keeps the ledger writes atomic. Ideal for this scale.</td></tr>
+<tr><td>Auth</td><td>jsonwebtoken + bcryptjs</td><td>Stateless JWT for the API; bcrypt for password hashing (bcryptjs avoids native build steps).</td></tr>
+<tr><td>Validation</td><td>Hand-written helpers</td><td>Explicit, readable validation with clear error messages rather than a schema library.</td></tr>
+<tr><td>Logging</td><td>Custom audit middleware + <code>audit_logs</code> table</td><td>Every transaction is recorded in the database, queryable from the UI — not just written to a log file.</td></tr>
+<tr><td>Tests</td><td>Node test script + Chrome DevTools Protocol driver</td><td>No test framework needed; 77 API assertions and 39 real-browser assertions, all runnable in one command.</td></tr>
+</table>
+
+<h3>2.2 Architecture</h3>
+<p>
+A classic three-tier, single-page-application architecture. The browser loads one static
+bundle; the React client calls a JSON REST API; the API talks to a single SQLite file. There
+is no separate ORM or service layer — business rules live in the route modules, which keeps
+the codebase small enough to read end-to-end.
+</p>
+
+<pre><code>        Browser (React 18 SPA)
+        ┌────────────────────────────────────────────┐
+        │  Login → Dashboard → Purchases / Transfers  │
+        │  Assignments &amp; Expenditures / Users / Audit│
+        │                                            │
+        │  api.js ── attaches Bearer token, JSON I/O  │
+        └───────────────────┬────────────────────────┘
+                            │  HTTPS  (JSON over /api)
+                            ▼
+        ┌────────────────────────────────────────────┐
+        │  Express server.js                          │
+        │  ┌──────────────────────────────────────┐  │
+        │  │ authenticate  → verify JWT            │  │
+        │  │ requireRole   → admin / commander /   │  │
+        │  │                  logistics             │  │
+        │  │ assertBaseAllowed → own-base scoping   │  │
+        │  │ auditMiddleware  → log every action    │  │
+        │  └──────────────────────────────────────┘  │
+        │  routes/ : auth · meta · dashboard ·        │
+        │            purchases · transfers ·          │
+        │            assignments · expenditures · admin│
+        │  db.js  : schema apply · ledger post        │
+        └───────────────────┬────────────────────────┘
+                            ▼
+        ┌────────────────────────────────────────────┐
+        │  SQLite  military_assets.db  (WAL mode)     │
+        │  stock_ledger  ← single source of truth     │
+        │  audit_logs    ← API activity trail         │
+        └────────────────────────────────────────────┘</code></pre>
+
+<h3>2.3 The append-only stock ledger</h3>
+<p>
+The most important design decision in the project is that stock is not stored as a mutable
+running balance on each base/equipment row. Instead, every event writes a signed row into
+<code>stock_ledger</code>, and balances are computed as the sum of those rows. Nothing can
+drift out of sync because there is nothing to keep in sync.
+</p>
+<table>
+<tr><th style="width:16%">tx_type</th><th style="width:14%">direction</th><th>Meaning</th></tr>
+<tr><td><code>OPENING</code></td><td>+1</td><td>Opening balance for a base/equipment/period</td></tr>
+<tr><td><code>PURCHASE</code></td><td>+1</td><td>Stock received from a supplier</td></tr>
+<tr><td><code>TRANSFER_IN</code></td><td>+1</td><td>Stock arrived from another base (on receive, or on cancel-back)</td></tr>
+<tr><td><code>TRANSFER_OUT</code></td><td>−1</td><td>Stock dispatched to another base</td></tr>
+<tr><td><code>ASSIGNMENT</code></td><td>−1</td><td>Stock issued to personnel (leaves base stock)</td></tr>
+<tr><td><code>EXPENDITURE</code></td><td>−1</td><td>Direct write-off (spoilage, loss) — <i>not</i> used for expenditure already covered by an assignment</td></tr>
+</table>
+
+<div class="callout">
+  <span class="t">A subtle point worth stating explicitly</span>
+  When ammunition is issued to a platoon and then fired, the physical stock left the base
+  <i>once</i>, at the moment of assignment. Recording a second ledger line at the moment of
+  expenditure would double-count the loss. Therefore an expenditure that is linked to an
+  assignment updates that assignment's <code>expended_quantity</code> but writes <b>no</b>
+  ledger line. Only a direct write-off, with no assignment, posts a negative
+  <code>EXPENDITURE</code> entry. Returning an assignment restores exactly
+  <code>quantity − expended_quantity</code>.
+</div>
+
+<h2 class="pb">3. Data Model / Database Schema</h2>
+
+<h3>3.1 Entity relationship overview</h3>
+<pre><code>  bases ──&lt; opening_balances &gt;── equipment_types
+   │  │              │
+   │  │              └──────&lt; stock_ledger &gt;───────┐  (every event lands here)
+   │  │                                             │
+   │  ├──&lt; purchases ──────────&gt; equipment_types  │
+   │  ├──&lt; transfers (from_base, to_base)            │
+   │  ├──&lt; assignments ────&lt; expenditures          │
+   │  └──&lt; users (base_id, role)                     │
+   │                                                │
+   └──&gt; audit_logs (user, action, entity, ip)  ─────┘</code></pre>
+
+<h3>3.2 Table reference</h3>
+<table>
+<tr><th style="width:19%">Table</th><th style="width:44%">Purpose and key columns</th><th>Notes</th></tr>
+<tr>
+  <td><code>bases</code></td>
+  <td><code>id, code, name, location, is_active</code></td>
+  <td>Reference data; seeded with 4 bases.</td>
+</tr>
+<tr>
+  <td><code>equipment_types</code></td>
+  <td><code>id, code, name, category, unit, is_active</code></td>
+  <td>12 seeded types across Weapons, Vehicles, Ammunition, Equipment.</td>
+</tr>
+<tr>
+  <td><code>users</code></td>
+  <td><code>id, email, full_name, role, base_id, password_hash, is_active, last_login_at</code></td>
+  <td><code>role</code> ∈ admin | commander | logistics. Hashes are never returned by the API.</td>
+</tr>
+<tr>
+  <td><code>opening_balances</code></td>
+  <td><code>base_id, equipment_type_id, period_start, quantity, created_by</code></td>
+  <td>One row per base/equipment/period; unique constraint prevents duplicates.</td>
+</tr>
+<tr>
+  <td><code>purchases</code></td>
+  <td><code>reference_no, base_id, equipment_type_id, quantity, unit_cost, supplier, purchased_on, remarks, created_by</code></td>
+  <td>Immutable; unique <code>reference_no</code>; <code>quantity &gt; 0</code> enforced by CHECK.</td>
+</tr>
+<tr>
+  <td><code>transfers</code></td>
+  <td><code>reference_no, from_base_id, to_base_id, equipment_type_id, quantity, status, dispatched_at, received_at, remarks, created_by</code></td>
+  <td><code>status</code> ∈ dispatched | received | cancelled. Timestamps recorded per leg.</td>
+</tr>
+<tr>
+  <td><code>assignments</code></td>
+  <td><code>reference_no, base_id, equipment_type_id, quantity, personnel_name, personnel_id, personnel_rank, assigned_date, due_date, returned_quantity, expended_quantity, status, created_by</code></td>
+  <td><code>status</code> ∈ active | returned | expended.</td>
+</tr>
+<tr>
+  <td><code>expenditures</code></td>
+  <td><code>assignment_id, base_id, equipment_type_id, quantity, reason, expended_on, remarks, created_by</code></td>
+  <td><code>assignment_id</code> is NULL for a direct write-off. <code>reason</code> ∈ used-in-operation | training | spoilage | lost | damaged | other.</td>
+</tr>
+<tr>
+  <td><code>stock_ledger</code></td>
+  <td><code>base_id, equipment_type_id, tx_type, direction, quantity, balance_after, ref_table, ref_id, occurred_at, created_by</code></td>
+  <td>Append-only. <code>balance_after</code> is stored for a readable running-balance history, but the authoritative closing balance is recomputed as the sum.</td>
+</tr>
+<tr>
+  <td><code>audit_logs</code></td>
+  <td><code>user_id, email, action, entity, entity_id, details, ip_address, user_agent, created_at</code></td>
+  <td>Written by middleware on every mutating and sensitive read request; queryable with filters from the UI.</td>
+</tr>
+</table>
+
+<h3>3.3 Key integrity rules</h3>
+<ul>
+  <li><b>Foreign keys are enforced</b> (<code>PRAGMA foreign_keys = ON</code>) with
+      <code>ON DELETE CASCADE</code> for base-scoped rows and <code>ON DELETE RESTRICT</code> where
+      history must not disappear (e.g. equipment types with ledger entries).</li>
+  <li><b>CHECK constraints</b> reject <code>quantity &lt;= 0</code>, invalid statuses and invalid
+      direction values at the database level, not only in application code.</li>
+  <li><b>Unique references</b> — <code>purchases.reference_no</code> and
+      <code>transfers.reference_no</code> are unique, so a document number cannot be reused.</li>
+  <li><b>WAL journal mode</b> is enabled so reads are not blocked during writes.</li>
+  <li><b>Ledger identity verified by test</b> — the smoke suite asserts, for every
+      base/equipment pair, that Opening + Purchases + Transfers In − Transfers Out −
+      Assigned − Write-offs equals the closing balance, and that no balance is negative.</li>
+</ul>
+
+<h2 class="pb">4. Authentication &amp; Role-Based Access Control</h2>
+
+<h3>4.1 Authentication flow</h3>
+<ol>
+  <li>The user submits email and password to <code>POST /api/auth/login</code>.</li>
+  <li>The server fetches the user, verifies the bcrypt hash, and rejects the request if the
+      account is inactive — with the same generic error message in both cases, so the endpoint
+      does not reveal whether an email exists.</li>
+  <li>On success a JWT is signed with <code>JWT_SECRET</code>, containing the user id, role and
+      base id, with an 8-hour expiry. The password hash is never included.</li>
+  <li>The client stores the token and re-attaches it as
+      <code>Authorization: Bearer &lt;token&gt;</code> on every request via a single
+      <code>api.js</code> wrapper.</li>
+  <li>On a 401 the client clears the session and redirects to the login screen.</li>
+</ol>
+
+<h3>4.2 Role permission matrix</h3>
+<table>
+<tr>
+  <th style="width:34%">Capability</th>
+  <th style="width:22%">Admin</th>
+  <th style="width:22%">Base Commander</th>
+  <th style="width:22%">Logistics Officer</th>
+</tr>
+<tr><td>View dashboard, balances, movements</td><td><span class="tag t-grn">All bases</span></td><td><span class="tag t-grn">Own base</span></td><td><span class="tag t-grn">Own base</span></td></tr>
+<tr><td>View purchases / transfers / assignments</td><td><span class="tag t-grn">All bases</span></td><td><span class="tag t-grn">Own base</span></td><td><span class="tag t-grn">Own base</span></td></tr>
+<tr><td>Create purchase</td><td><span class="tag t-grn">Yes</span></td><td><span class="tag t-grn">Yes</span></td><td><span class="tag t-grn">Yes</span></td></tr>
+<tr><td>Dispatch / receive / cancel transfer</td><td><span class="tag t-grn">Yes</span></td><td><span class="tag t-grn">Yes</span></td><td><span class="tag t-grn">Yes</span></td></tr>
+<tr><td>Create assignment / record expenditure</td><td><span class="tag t-grn">Yes</span></td><td><span class="tag t-grn">Yes</span></td><td><span class="tag t-amb">No — read only</span></td></tr>
+<tr><td>User management (create / edit / delete)</td><td><span class="tag t-grn">Yes</span></td><td><span class="tag t-red">No</span></td><td><span class="tag t-red">No</span></td></tr>
+<tr><td>View audit log</td><td><span class="tag t-grn">Yes</span></td><td><span class="tag t-red">No</span></td><td><span class="tag t-red">No</span></td></tr>
+</table>
+
+<h3>4.3 How enforcement works</h3>
+<p>
+Authorisation is enforced on the <b>server</b>; the frontend only hides controls the user cannot
+use, to reduce confusion. Two independent mechanisms are applied to every request:
+</p>
+<ul>
+  <li><b><code>requireRole(...)</code></b> — a route declares which roles may call it. A Logistics
+      Officer calling <code>POST /api/assignments</code> receives <code>403 Forbidden</code>.</li>
+  <li><b><code>assertBaseAllowed()</code></b> — for non-admins, any supplied <code>base_id</code> is
+      compared with the user's assigned base. Reading a record outside that base returns
+      <code>403</code>; creating a record for another base is rejected. Queries for the dashboard
+      and list endpoints are automatically filtered to the user's own base, so data leakage
+      through a missing filter is not possible.</li>
+</ul>
+<p>
+The Admin role also has <code>base_id = NULL</code>, which is the marker for "global access". A
+separate <code>GET /api/meta/permissions</code> endpoint returns the current user's capabilities so
+the UI can render the correct navigation and read-only banners.
+</p>
+<div class="callout ok">
+  <span class="t">Verified, not assumed</span>
+  The test suite logs in as all three roles and asserts both the positive path (the role can do
+  what it should) and the negative path (the role is refused what it must not). A test asserting
+  only that a commander can create an assignment proves very little; the tests that prove the
+  system is safe are the ones asserting a 403.
+</div>
+
+<h2 class="pb">5. API Logging (Audit Trail)</h2>
+
+<h3>5.1 What is logged</h3>
+<p>
+An <code>auditMiddleware</code> sits in the Express pipeline and records every request that
+changes state, plus a set of sensitive reads. Each entry captures who did what, to which
+entity, from where and when.
+</p>
+<table>
+<tr><th style="width:26%">Column</th><th>Content</th></tr>
+<tr><td><code>user_id</code>, <code>email</code></td><td>Who performed the action (email denormalised so the record survives user deletion)</td></tr>
+<tr><td><code>action</code></td><td>Verb such as <code>login</code>, <code>create</code>, <code>update</code>, <code>delete</code>, <code>receive</code>, <code>return</code></td></tr>
+<tr><td><code>entity</code>, <code>entity_id</code></td><td>What was touched — <code>purchase</code>, <code>transfer</code>, <code>user</code> — and its identifier</td></tr>
+<tr><td><code>details</code></td><td>Safe JSON summary of the change (see sanitiser below)</td></tr>
+<tr><td><code>ip_address</code>, <code>user_agent</code></td><td>Origin of the request</td></tr>
+<tr><td><code>created_at</code></td><td>UTC timestamp</td></tr>
+</table>
+
+<h3>5.2 Sensitive-field sanitiser</h3>
+<p>
+Audit details are built from request bodies, so a naive implementation would write passwords
+into the log. A recursive sanitiser strips any key matching a blocklist —
+<code>password</code>, <code>password_hash</code>, <code>token</code>, <code>secret</code>,
+<code>authorization</code> — replacing the value with <code>"[redacted]"</code> at any depth,
+including inside nested objects and arrays. Password change and user-create events are logged
+this way, so the audit trail can be shared with an auditor without leaking credentials.
+</p>
+
+<h3>5.3 Auditability of the stock itself</h3>
+<p>
+Beyond the request log, the domain is auditable by construction: purchases and transfers are
+never deleted, only counter-transacted; every stock change has a corresponding
+<code>stock_ledger</code> row pointing back at the source document
+(<code>ref_table</code> + <code>ref_id</code>); and every document records the user who created it.
+The Audit Log screen supports filtering by action, entity, date range and free text, and expands
+any entry to show its full detail.
+</p>
+
+<h2 class="pb">6. Screens</h2>
+<p class="foot-note">All screenshots were captured automatically by <code>frontend/scripts/screenshots.js</code> against the running application.</p>
+
+<figure>
+  <img src="../deliverables/screenshots/01-login.png" alt="Login screen">
+  <figcaption>Figure 1 — Login screen with one-click demo credentials for each role.</figcaption>
+</figure>
+
+<figure>
+  <img src="../deliverables/screenshots/02-dashboard.png" alt="Dashboard">
+  <figcaption>Figure 2 — Dashboard: the four required headline metrics (Opening Balance, Net Movement, Assigned, Expended) plus Closing Balance, with breakdowns by equipment and by base.</figcaption>
+</figure>
+
+<figure>
+  <img src="../deliverables/screenshots/04-net-movement-popup.png" alt="Net Movement popup">
+  <figcaption>Figure 3 — The Net Movement pop-up (bonus feature): individual purchases, transfers in and transfers out behind the single headline figure.</figcaption>
+</figure>
+
+<div class="pb"></div>
+<figure>
+  <img src="../deliverables/screenshots/05-purchases.png" alt="Purchases">
+  <figcaption>Figure 4 — Purchase history with date, base and equipment filters.</figcaption>
+</figure>
+
+<figure>
+  <img src="../deliverables/screenshots/07-transfers.png" alt="Transfers">
+  <figcaption>Figure 5 — Inter-base transfers with full status and timestamp history.</figcaption>
+</figure>
+
+<figure>
+  <img src="../deliverables/screenshots/09-assignments.png" alt="Assignments">
+  <figcaption>Figure 6 — Asset assignments to named personnel, with quantity assigned, returned and expended.</figcaption>
+</figure>
+
+<figure>
+  <img src="../deliverables/screenshots/10-expenditures.png" alt="Expenditures">
+  <figcaption>Figure 7 — Expenditure log with reason codes, filtered by assignment and base.</figcaption>
+</figure>
+
+<div class="pb"></div>
+<figure>
+  <img src="../deliverables/screenshots/11-audit-log.png" alt="Audit log">
+  <figcaption>Figure 8 — API / activity audit log with filters and expandable detail rows.</figcaption>
+</figure>
+
+<figure>
+  <img src="../deliverables/screenshots/13-users.png" alt="User management">
+  <figcaption>Figure 9 — User management (admin only): create users and assign role and base.</figcaption>
+</figure>
+
+<figure>
+  <img src="../deliverables/screenshots/16-mobile-dashboard.png" alt="Mobile dashboard">
+  <figcaption>Figure 10 — Responsive layout: the same dashboard on a phone-width screen.</figcaption>
+</figure>
+
+<figure>
+  <img src="../deliverables/screenshots/14-commander-dashboard.png" alt="Commander view">
+  <figcaption>Figure 11 — The same dashboard as a Base Commander: automatically scoped to his own base only.</figcaption>
+</figure>
+
+<h2 class="pb">7. Installation &amp; Running the Project</h2>
+
+<h3>7.1 Prerequisites</h3>
+<ul>
+  <li><b>Node.js 20 or newer</b> (developed and tested on Node 22 / 25) — check with <code>node -v</code></li>
+  <li><b>npm 10 or newer</b> — ships with Node</li>
+  <li>No database server, no Docker, no Python required.</li>
+</ul>
+
+<h3>7.2 Start the backend</h3>
+<pre><code>cd backend
+npm install
+cp .env.example .env      # Windows: copy .env.example .env
+npm start</code></pre>
+<p>
+The database file <code>backend/database/military_assets.db</code> is created automatically and
+populated with demo data on first run, so there is no separate migration or import step. Verify it
+with <code>http://localhost:4000/api/health</code>, which should return
+<code>{"status":"ok"}</code>.
+</p>
+
+<h3>7.3 Start the frontend</h3>
+<pre><code>cd frontend
+npm install
+cp .env.example .env      # Windows: copy .env.example .env
+npm run dev</code></pre>
+<p>Open <code>http://localhost:5173</code>. Vite proxies <code>/api</code> to port 4000, so the browser talks to a single origin and CORS never enters the picture during development.</p>
+
+<h3>7.4 Environment variables</h3>
+<table>
+<tr><th style="width:26%">Variable</th><th style="width:20%">Default</th><th>Description</th></tr>
+<tr><td><code>PORT</code></td><td><code>4000</code></td><td>Port the API listens on</td></tr>
+<tr><td><code>DB_FILE</code></td><td><code>database/military_assets.db</code></td><td>Path to the SQLite file, relative to <code>backend/</code></td></tr>
+<tr><td><code>JWT_SECRET</code></td><td>dev fallback</td><td><b>Must be set to a long random value in production</b></td></tr>
+<tr><td><code>JWT_EXPIRES_IN</code></td><td><code>8h</code></td><td>Token lifetime</td></tr>
+<tr><td><code>CORS_ORIGIN</code></td><td>localhost:5173</td><td>Comma-separated allowed origins in production</td></tr>
+<tr><td><code>VITE_API_URL</code></td><td>empty (use proxy)</td><td>Frontend only: absolute API base URL when deployed separately</td></tr>
+</table>
+
+<h3>7.5 Re-seeding, dumping and testing</h3>
+<pre><code>cd backend
+npm run reset     # wipe and re-seed the demo database
+npm run dump      # write deliverables/database/dump.sql
+npm run smoke     # re-seed, then run 77 API + RBAC assertions
+
+cd ../frontend
+npm run build                 # production bundle in dist/
+node scripts/browser-check.js # 39 real-browser assertions
+node scripts/screenshots.js   # regenerate all screenshots</code></pre>
+
+<h3>7.6 Restoring the supplied database dump</h3>
+<pre><code>sqlite3 military_assets.db &lt; dump.sql
+# or simply copy deliverables/database/military_assets.db into backend/database/</code></pre>
+
+<h2 class="pb">8. API Endpoints</h2>
+<p>All endpoints are prefixed with <code>/api</code> and speak JSON. Every route except <code>POST /auth/login</code> and <code>GET /health</code> requires the header <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+
+<h3>8.1 Authentication &amp; reference data</h3>
+<table>
+<tr><th style="width:10%">Method</th><th style="width:30%">Endpoint</th><th style="width:18%">Access</th><th>Description</th></tr>
+<tr><td>GET</td><td><code>/health</code></td><td>public</td><td>Liveness probe used by the host platform.</td></tr>
+<tr><td>POST</td><td><code>/auth/login</code></td><td>public</td><td>Body <code>{email, password}</code>. Returns <code>{token, user}</code>. Audited.</td></tr>
+<tr><td>GET</td><td><code>/auth/me</code></td><td>any</td><td>Current user profile from the token.</td></tr>
+<tr><td>GET</td><td><code>/meta/bases</code></td><td>any</td><td>List of bases — narrowed to the user's own base for non-admins.</td></tr>
+<tr><td>GET</td><td><code>/meta/equipment-types</code></td><td>any</td><td>Equipment catalogue.</td></tr>
+<tr><td>GET</td><td><code>/meta/permissions</code></td><td>any</td><td>Capabilities of the current role, used to render the UI.</td></tr>
+</table>
+
+<h3>8.2 Dashboard</h3>
+<table>
+<tr><th style="width:10%">Method</th><th style="width:34%">Endpoint</th><th>Description</th></tr>
+<tr><td>GET</td><td><code>/dashboard/summary</code></td><td>All KPI totals for the selected window, with per-equipment and per-base breakdowns. Accepts <code>from</code>, <code>to</code>, <code>baseId</code>, <code>equipmentTypeId</code>.</td></tr>
+<tr><td>GET</td><td><code>/dashboard/net-movement</code></td><td><b>Pop-up drill-down.</b> The individual purchases, transfer-ins and transfer-outs that make up the Net Movement figure.</td></tr>
+<tr><td>GET</td><td><code>/dashboard/balances</code></td><td>Current stock for every base × equipment combination.</td></tr>
+<tr><td>GET</td><td><code>/dashboard/movements</code></td><td>Ledger rows for the window with the running <code>balance_after</code>; accepts <code>limit</code>.</td></tr>
+</table>
+
+<h3>8.3 Purchases</h3>
+<table>
+<tr><th style="width:10%">Method</th><th style="width:30%">Endpoint</th><th style="width:18%">Access</th><th>Description</th></tr>
+<tr><td>GET</td><td><code>/purchases</code></td><td>any</td><td>History filtered by <code>from</code>, <code>to</code>, <code>baseId</code>, <code>equipmentTypeId</code>, free-text <code>q</code>.</td></tr>
+<tr><td>GET</td><td><code>/purchases/summary</code></td><td>any</td><td>Document count, total units and total value for the same filters.</td></tr>
+<tr><td>POST</td><td><code>/purchases</code></td><td>admin, commander, logistics</td><td>Records a purchase and posts a <code>PURCHASE</code> ledger entry. Rejects a base the user does not control.</td></tr>
+</table>
+
+<h3>8.4 Transfers</h3>
+<table>
+<tr><th style="width:10%">Method</th><th style="width:30%">Endpoint</th><th style="width:18%">Access</th><th>Description</th></tr>
+<tr><td>GET</td><td><code>/transfers</code></td><td>any</td><td>History where the user's base is either end of the route; <code>status</code> filter available.</td></tr>
+<tr><td>POST</td><td><code>/transfers</code></td><td>admin, commander, logistics</td><td>Dispatch. Validates sufficient stock at the sender, then posts <code>TRANSFER_OUT</code>.</td></tr>
+<tr><td>POST</td><td><code>/transfers/:id/receive</code></td><td>admin, commander, logistics</td><td>Confirms arrival at the destination and posts <code>TRANSFER_IN</code> there.</td></tr>
+<tr><td>POST</td><td><code>/transfers/:id/cancel</code></td><td>admin, commander, logistics</td><td>Cancels an in-transit transfer, returning the stock to the sender.</td></tr>
+</table>
+
+<h3>8.5 Assignments &amp; expenditures</h3>
+<table>
+<tr><th style="width:10%">Method</th><th style="width:30%">Endpoint</th><th style="width:18%">Access</th><th>Description</th></tr>
+<tr><td>GET</td><td><code>/assignments</code></td><td>any</td><td>History with <code>status</code> filter; shows assigned, returned and expended quantities.</td></tr>
+<tr><td>POST</td><td><code>/assignments</code></td><td>admin, commander</td><td>Issues assets to named personnel and posts <code>ASSIGNMENT</code> ledger entries.</td></tr>
+<tr><td>POST</td><td><code>/assignments/:id/return</code></td><td>admin, commander</td><td>Returns the un-expended remainder to base stock.</td></tr>
+<tr><td>GET</td><td><code>/expenditures</code></td><td>any</td><td>History with a <code>reason</code> filter.</td></tr>
+<tr><td>POST</td><td><code>/expenditures</code></td><td>admin, commander</td><td>Records consumption against an assignment, or a direct write-off with a reason and remarks.</td></tr>
+</table>
+
+<h3>8.6 Administration &amp; audit</h3>
+<table>
+<tr><th style="width:10%">Method</th><th style="width:30%">Endpoint</th><th style="width:18%">Access</th><th>Description</th></tr>
+<tr><td>GET</td><td><code>/admin/users</code></td><td>admin</td><td>List users. Password hashes are explicitly excluded from the query.</td></tr>
+<tr><td>POST</td><td><code>/admin/users</code></td><td>admin</td><td>Create a user with a role and base.</td></tr>
+<tr><td>PATCH</td><td><code>/admin/users/:id</code></td><td>admin</td><td>Change role, base assignment or active flag.</td></tr>
+<tr><td>DELETE</td><td><code>/admin/users/:id</code></td><td>admin</td><td>Delete a user.</td></tr>
+<tr><td>GET</td><td><code>/admin/audit</code></td><td>admin</td><td>Audit log filtered by <code>action</code>, <code>entity</code>, <code>from</code>, <code>to</code>, <code>q</code>.</td></tr>
+</table>
+
+<h3>8.7 Error handling</h3>
+<p>
+A single error handler converts anything thrown into a consistent JSON body,
+<code>{ "error": "message" }</code>, with the correct status: <code>400</code> for validation
+problems, <code>401</code> for missing or invalid tokens, <code>403</code> for role or base
+violations, <code>404</code> for unknown records and routes, and <code>409</code> for
+conflicts such as an insufficient stock balance or a duplicate reference number.
+</p>
+
+<h2 class="pb">9. Login Credentials</h2>
+<p>All demo accounts share the password <code>Password123</code>. They are seeded by
+<code>npm run seed</code> and are listed on the login screen for one-click access.</p>
+<table>
+<tr><th style="width:26%">Email</th><th style="width:20%">Password</th><th style="width:20%">Role</th><th>Base / scope</th></tr>
+<tr><td><code>admin@mams.mil</code></td><td><code>Password123</code></td><td>Admin</td><td>All bases — full access</td></tr>
+<tr><td><code>commander.kabul@mams.mil</code></td><td><code>Password123</code></td><td>Base Commander</td><td>Fort Kabul (B-01)</td></tr>
+<tr><td><code>commander.kandahar@mams.mil</code></td><td><code>Password123</code></td><td>Base Commander</td><td>Camp Vance (B-02)</td></tr>
+<tr><td><code>commander.khost@mams.mil</code></td><td><code>Password123</code></td><td>Base Commander</td><td>Fob Khost (B-03)</td></tr>
+<tr><td><code>logistics.kabul@mams.mil</code></td><td><code>Password123</code></td><td>Logistics Officer</td><td>Fort Kabul — purchases &amp; transfers</td></tr>
+<tr><td><code>logistics.kandahar@mams.mil</code></td><td><code>Password123</code></td><td>Logistics Officer</td><td>Camp Vance — purchases &amp; transfers</td></tr>
+</table>
+<div class="callout warn">
+  <span class="t">Demo credentials only</span>
+  These accounts exist so the system can be evaluated immediately. Before any real use, remove or
+  re-password the seeded accounts, set a strong <code>JWT_SECRET</code>, and serve over HTTPS.
+</div>
+
+<h2>10. Testing &amp; Verification</h2>
+<table>
+<tr><th style="width:22%">Suite</th><th style="width:14%">Checks</th><th>Coverage</th></tr>
+<tr><td>API smoke suite<br><code class="small">backend/scripts/smoke.js</code></td><td><b>77 / 77</b></td><td>Login and token handling, role and base scoping, the ledger identity and zero-negative-balance invariants, purchase/transfer/assignment/expenditure lifecycles, insufficient-stock rejection, admin user management, audit entries, and error responses.</td></tr>
+<tr><td>Browser suite<br><code class="small">frontend/scripts/browser-check.js</code></td><td><b>39 / 39</b></td><td>Real Chrome via the DevTools Protocol: login and rejection of bad credentials, every page renders, forms open and validate, filters change the results, the Net Movement pop-up opens and closes, the admin-only page is hidden for other roles, mobile layout, and no console errors or failed network requests.</td></tr>
+</table>
+<p>
+Both suites exit non-zero on failure and print a pass/fail line, so they can be wired into CI
+directly. The verification is behavioural rather than cosmetic: the tests assert that a Logistics
+Officer is refused an assignment, that the dashboard figures equal the sum of the transaction
+pages, and that cancelling a transfer restores the sender's balance.
+</p>
+
+<h2>11. Deployment</h2>
+<p>
+A <code>render.yaml</code> blueprint is included for the API, and <code>vercel.json</code> and
+<code>netlify.toml</code> for the frontend, so the application can be pushed to a live URL
+without modification. The frontend is a static build; the backend reads its port, database path
+and allowed origins from the environment.
+</p>
+<pre><code>Backend  → Render    : rootDir=backend, buildCommand=npm install, startCommand=npm start,
+                      healthCheckPath=/api/health
+Frontend → Vercel    : rootDir=frontend, buildCommand=npm run build, outputDirectory=dist
+Frontend → Netlify   : base directory=frontend, build=npm run build, publish=dist
+                      environment: VITE_API_URL=https://&lt;api-host&gt;</code></pre>
+<div class="callout warn">
+  <span class="t">Read this before demonstrating on a free host</span>
+  SQLite is a single file. On a host with an ephemeral disk the database is reset and re-seeded
+  on each cold start, so any records created during a demo will not persist. This does not affect
+  the application itself — attach a persistent disk, or run locally with
+  <code>npm run reset</code> between demonstrations.
+</div>
+
+<h2>12. Conclusion</h2>
+<p>
+The delivered system meets the specified requirements: it reports opening balance, closing balance
+and net movement; distinguishes purchases, transfers in and transfers out; tracks assigned and
+expended assets with named personnel; and enforces role-based access control that is verified by
+tests rather than assumed. Two additions go beyond the brief — the Net Movement pop-up that opens
+the headline figure down to individual transactions, and a responsive layout that makes the same
+application usable on a phone in the field.
+</p>
+<p>
+The design choice that makes the reporting trustworthy is the single append-only ledger: because
+the dashboard is a projection of the transaction history rather than a separately maintained
+counter, the figures cannot drift apart from the records behind them. The main constraints on
+further work are the local-file database and the stateless token, both of which have a clear,
+contained upgrade path described in the limitations section.
+</p>
+
+</body>
+</html>

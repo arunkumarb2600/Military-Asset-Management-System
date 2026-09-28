@@ -1,0 +1,24 @@
+# Netlify deployment for the MAMS frontend
+# Netlify build settings:
+#   Base directory : frontend
+#   Build command  : npm run build
+#   Publish dir    : dist
+#
+# Environment variable (set in the Netlify UI):
+#   VITE_API_URL=https://mams-api.onrender.com
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+# Single-page app: every route is handled by React Router.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

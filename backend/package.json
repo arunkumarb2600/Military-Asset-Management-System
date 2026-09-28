@@ -1,0 +1,27 @@
+{
+  "name": "mams-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Military Asset Management System - API",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/seed.js",
+    "reset": "node src/seed.js --force",
+    "dump": "node src/dump.js",
+    "smoke": "node src/seed.js --force && node scripts/smoke.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.5.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

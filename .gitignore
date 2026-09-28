@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+frontend/dist/
+
+# environment / secrets  (never commit real .env files)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# database runtime files
+backend/database/*.db
+backend/database/*.db-shm
+backend/database/*.db-wal
+!backend/database/military_assets.db
+
+# logs
+*.log
+npm-debug.log*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

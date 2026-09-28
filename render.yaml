@@ -1,0 +1,44 @@
+# =====================================================================
+#  Render.com blueprint  -  deploys the MAMS backend (Node + SQLite)
+#
+#  How to use:
+#    1. Push this repository to GitHub
+#    2. Render Dashboard -> New -> Blueprint -> pick the repo
+#    3. Render detects this file, creates the web service
+#    4. Set the environment variables listed under `envVars` in the
+#       dashboard (JWT_SECRET at minimum) and deploy
+#
+#  NOTE: SQLite is a file-based database. On Render's free tier the disk
+#  is ephemeral, so the demo data is re-seeded on every cold start. This
+#  is fine for an evaluation build. For real persistence switch DB_FILE
+#  to a path on a Render Persistent Disk (see README "Going to
+#  production").
+# =====================================================================
+
+services:
+  - type: web
+    name: mams-api
+    runtime: node
+    plan: free
+    region: frankfurt          # closest to the demo audience
+    branch: main
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22.14.0"
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4000"
+      - key: DB_FILE
+        value: database/military_assets.db
+      - key: JWT_EXPIRES_IN
+        value: 8h
+      - key: CORS_ORIGIN
+        sync: false          # set this to your deployed frontend URL
+      - key: JWT_SECRET
+        generateValue: true  # Render generates a strong random secret
