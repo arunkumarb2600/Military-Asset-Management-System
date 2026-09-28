@@ -54,7 +54,7 @@ The frontend needs the backend URL, so deploy the API first.
 
    | Key | Value |
    |---|---|
-   | `CORS_ORIGIN` | leave blank **for now**, add your Vercel URL in step 3 |
+   | `CORS_ORIGIN` | **Required** — your Vercel URL, e.g. `https://my-app.vercel.app`. You can fill this in after step 3 once you know the URL. |
    | `JWT_SECRET` | tick "generate" — Render creates a strong random one |
    | `DB_FILE` | `database/military_assets.db` (default, fine) |
 
@@ -130,7 +130,7 @@ If you `git push` to the main branch, both Render and Vercel redeploy on their o
 | Symptom | Cause | Fix |
 |---|---|---|
 | Login fails, network error in console | Backend URL not baked in | Rebuild with `--build-env VITE_API_URL=...` |
-| `CORS` error in console | `CORS_ORIGIN` wrong on Render | Must match the Vercel origin exactly, no trailing slash |
+| `CORS` error in console | `CORS_ORIGIN` not set (or wrong) on Render | Must match the Vercel origin exactly, no trailing slash. Accepts a comma-separated list. |
 | Page 404 on refresh (e.g. `/purchases`) | SPA rewrites missing | `frontend/vercel.json` already has them; confirm deploy picked up the file |
 | First request very slow | Free-tier cold start | Expected; Render sleeps when idle |
 | Data disappears after a while | Ephemeral disk | Expected on free tier; add a Persistent Disk or run locally |

@@ -39,6 +39,10 @@ services:
       - key: JWT_EXPIRES_IN
         value: 8h
       - key: CORS_ORIGIN
-        sync: false          # set this to your deployed frontend URL
+        # REQUIRED in production: your deployed frontend origin, e.g.
+        #   https://military-asset-management-system.vercel.app
+        # Comma-separate to allow several. If left empty the API will only
+        # accept localhost, so the deployed site will fail with a CORS error.
+        sync: false
       - key: JWT_SECRET
         generateValue: true  # Render generates a strong random secret

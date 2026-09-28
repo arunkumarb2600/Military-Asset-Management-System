@@ -19,7 +19,31 @@ const PORT = process.env.PORT || 4000;
 
 /* --------------------------- global setup -------------------------- */
 app.set('trust proxy', 1);
-app.use(cors({ origin: process.env.CORS_ORIGIN || true, credentials: false }));
+
+// CORS_ORIGIN accepts a comma-separated list of allowed origins, e.g.
+//   CORS_ORIGIN=https://my-app.vercel.app,https://my-app.netlify.app
+// The `cors` package treats a string as a SINGLE literal origin, so the list
+// must be split into an array or every real request would be rejected.
+// If it is not set we fall back to the local dev origins rather than
+// reflecting any origin, which would let any website call the API.
+const DEV_ORIGINS = ['http://localhost:5173', 'http://localhost:4173'];
+const allowedOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+if (allowedOrigins.length) {
+  app.use(cors({ origin: allowedOrigins, credentials: false }));
+  console.log(`CORS: allowing ${allowedOrigins.length} origin(s): ${allowedOrigins.join(', ')}`);
+} else {
+  app.use(cors({ origin: DEV_ORIGINS, credentials: false }));
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('CORS_ORIGIN is not set - falling back to local dev origins only. Set CORS_ORIGIN to your deployed frontend URL.');
+  } else {
+    console.log('CORS: CORS_ORIGIN not set - allowing local dev origins only.');
+  }
+}
+
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(auditMiddleware);
