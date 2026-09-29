@@ -69,7 +69,8 @@ app.get('/', (req, res) =>
         '/api/dashboard/summary', '/api/dashboard/net-movement',
         '/api/dashboard/balances', '/api/dashboard/movements',
         '/api/opening-balances', '/api/purchases', '/api/transfers',
-        '/api/assignments', '/api/expenditures', '/api/admin/users', '/api/admin/audit'
+        '/api/assignments', '/api/expenditures', '/api/admin/users',
+        '/api/admin/audit', '/api/admin/clear-data'
       ]
     }
   })

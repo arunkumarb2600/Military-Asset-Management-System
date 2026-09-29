@@ -12,6 +12,27 @@ const ROLE_INFO = {
 };
 
 export default function Users() {
+  const [wipeOpen, setWipeOpen] = useState(false);
+  const [wipeText, setWipeText] = useState('');
+  const [wipeBusy, setWipeBusy] = useState(false);
+  const [wipeError, setWipeError] = useState('');
+
+  async function clearAllData() {
+    setWipeError('');
+    setWipeBusy(true);
+    try {
+      const res = await api.clearAllData({ confirm: wipeText });
+      toast.ok(res.message);
+      setWipeOpen(false);
+      setWipeText('');
+      load();
+    } catch (e) {
+      setWipeError(e.message);
+    } finally {
+      setWipeBusy(false);
+    }
+  }
+
   const { bases } = useReference();
   const { user: me } = useAuth();
   const toast = useToast();
@@ -91,6 +112,13 @@ export default function Users() {
             </div>
           </div>
           <button className="btn btn-primary" onClick={() => { setForm(BLANK); setFormError(''); setOpen(true); }}>+ Add user</button>
+          <button
+            className="btn btn-danger"
+            style={{ marginLeft: 'auto' }}
+            onClick={() => { setWipeText(''); setWipeError(''); setWipeOpen(true); }}
+          >
+            Clear all stock data
+          </button>
         </div>
 
         {error && <Alert kind="error">{error}</Alert>}
@@ -215,6 +243,49 @@ export default function Users() {
             <div className="alert alert-info" style={{ marginTop: 12, marginBottom: 0 }}>
               {ROLE_INFO[form.role]?.note}
             </div>
+          </form>
+        </Modal>
+      )}
+
+      {wipeOpen && (
+        <Modal
+          title="Clear all stock data"
+          onClose={() => !wipeBusy && setWipeOpen(false)}
+          footer={
+            <>
+              <button className="btn" onClick={() => setWipeOpen(false)} disabled={wipeBusy}>Cancel</button>
+              <button
+                className="btn btn-danger"
+                onClick={clearAllData}
+                disabled={wipeBusy || wipeText.trim().toUpperCase() !== 'DELETE ALL DATA'}
+              >
+                {wipeBusy ? 'Clearing…' : 'Yes, delete all stock data'}
+              </button>
+            </>
+          }
+        >
+          <div className="alert alert-danger" style={{ marginTop: 0 }}>
+            <strong>This cannot be undone.</strong> It permanently deletes every opening balance,
+            purchase, transfer, assignment and expenditure, and empties the stock ledger and audit log.
+          </div>
+
+          <div className="small muted" style={{ margin: '12px 0' }}>
+            <strong>Kept:</strong> your user accounts, the bases, and the equipment catalogue — so you stay
+            logged in and every dropdown still works.
+            <br /><br />
+            <strong>Useful for:</strong> replacing the sample figures with your own before a demonstration.
+          </div>
+
+          <form onSubmit={(e) => { e.preventDefault(); clearAllData(); }}>
+            <Field label="Type DELETE ALL DATA to confirm" required>
+              <input
+                value={wipeText}
+                onChange={(e) => setWipeText(e.target.value)}
+                placeholder="DELETE ALL DATA"
+                autoFocus
+              />
+            </Field>
+            {wipeError && <Alert kind="error">{wipeError}</Alert>}
           </form>
         </Modal>
       )}

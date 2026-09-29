@@ -226,6 +226,7 @@ const check = (name, ok, extra) => {
     // and block the request.
     r = await b.evalJs(`document.querySelector('.modal select').value`);
     check('admin form pre-selects a base', !!r.value, r);
+
     await b.evalJs(`(()=>{const s=document.querySelector('.modal select');Object.getOwnPropertyDescriptor(Object.getPrototypeOf(s),'value').set.call(s,'');s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.modal-foot .btn-primary').click();})()`);
     await sleep(500);
     r = await b.evalJs(`document.querySelector('.modal select').validity.valueMissing`);
@@ -253,6 +254,34 @@ const check = (name, ok, extra) => {
     check('valid purchase is saved and confirmed by a toast', /Purchase PUR-/.test(r.value || ''), r);
     r = await b.evalJs(`[...document.querySelectorAll('tbody tr')].some(t=>t.textContent.includes('UI-TEST-1'))`);
     check('new purchase appears in the table', r.value === true, r);
+
+    console.log('\n== Clear all stock data (destructive guard) ==');
+    await b.goto(APP + '/users');
+    await b.waitFor(`[...document.querySelectorAll('button')].some(x=>/Clear all stock data/.test(x.textContent))`, { label: 'clear data button' });
+    r = await b.evalJs(`[...document.querySelectorAll('button')].some(x=>/Clear all stock data/.test(x.textContent))`);
+    check('admin sees the clear-data button', r.value === true, r);
+    r = await b.evalJs(`[...document.querySelectorAll('.nav a')].some(a=>/User Management/i.test(a.textContent))`);
+    check('admin does see User Management', r.value === true, r);
+    await b.evalJs(`[...document.querySelectorAll('button')].find(x=>/Clear all stock data/.test(x.textContent)).click(); true`);
+    await b.waitFor(`document.querySelector('.modal')`, { label: 'clear data modal' });
+    r = await b.evalJs(`document.querySelector('.modal h2')?.textContent || ''`);
+    check('clear-data modal opens', /Clear all stock data/i.test(r.value || ''), r);
+    r = await b.evalJs(`document.querySelector('.modal .alert-danger')?.textContent || ''`);
+    check('modal warns it cannot be undone', /cannot be undone/i.test(r.value || ''), r);
+    r = await b.evalJs(`[...document.querySelectorAll('.modal button')].filter(x=>/delete all stock data/i.test(x.textContent))[0].disabled`);
+    check('confirm button disabled while phrase is empty', r.value === true, r);
+    await b.evalJs(`(()=>{const i=document.querySelector('.modal input');const s=Object.getOwnPropertyDescriptor(Object.getPrototypeOf(i),'value').set;s.call(i,'delete all data');i.dispatchEvent(new Event('input',{bubbles:true}));return 1})()`);
+    await b.waitFor(`[...document.querySelectorAll('.modal button')].filter(x=>/delete all stock data/i.test(x.textContent))[0].disabled === false`, { label: 'confirm enabled' });
+    r = await b.evalJs(`[...document.querySelectorAll('.modal button')].filter(x=>/delete all stock data/i.test(x.textContent))[0].disabled`);
+    check('confirm button enables once phrase is typed', r.value === false, r);
+    // Cancel rather than wipe: the suite's seeded data is still needed.
+    await b.evalJs(`[...document.querySelectorAll('.modal button')].find(x=>/^Cancel$/i.test(x.textContent.trim())).click(); true`);
+    await b.waitFor(`document.querySelector('.modal') === null`, { label: 'modal closed' });
+    r = await b.evalJs(`document.body.innerText.includes('Clear all stock data')`);
+    check('cancel closes without clearing anything', r.value === true, r);
+    await b.evalJs(`(()=>{const s=document.querySelector('.modal select');Object.getOwnPropertyDescriptor(Object.getPrototypeOf(s),'value').set.call(s,'');s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.modal-foot .btn-primary').click();})()`);
+    await sleep(500);
+    r = await b.evalJs(`document.querySelector('.modal select').validity.valueMissing`);
 
     console.log('\n== Filters ==');
     await b.goto(APP + '/');
@@ -285,6 +314,11 @@ const check = (name, ok, extra) => {
     await b.waitFor(`document.body.innerText.includes('Access denied')`, { label: 'access denied' });
     r = await b.evalJs(`document.body.innerText.includes('Access denied')`);
     check('commander blocked from /users', r.value === true, r);
+
+    // The destructive "clear all data" action must never be reachable by a
+    // non-admin, and must stay behind a typed confirmation.
+    r = await b.evalJs(`document.body.innerText.includes('Clear all stock data')`);
+    check('commander never sees the clear-data action', r.value === false, r);
 
     // Drop the commander's session first, otherwise the router bounces us
     // off /login and the form is never rendered.

@@ -337,7 +337,15 @@ function ensureSeeded() {
 if (require.main === module) {
   const did = ensureSeeded();
   const c = db.prepare('SELECT COUNT(*) AS n FROM users').get().n;
-  console.log(did ? `Seeded demo data (${c} users).` : 'Database already contains data - nothing to do. Use "npm run reset" to re-seed.');
+  if (did) {
+    const stock = db.prepare('SELECT COUNT(*) AS n FROM opening_balances').get().n
+      + db.prepare('SELECT COUNT(*) AS n FROM purchases').get().n;
+    console.log(stock
+      ? `Seeded demo data (${c} users).`
+      : 'Seeded logins, bases and equipment types only - no stock data. Use the Opening Stock page to begin.');
+  } else {
+    console.log('Database already contains data - nothing to do. Use "npm run reset" to re-seed.');
+  }
   console.log('Logins: admin@mams.mil / commander.kabul@mams.mil / logistics.kabul@mams.mil  (password: Password123)');
 }
 

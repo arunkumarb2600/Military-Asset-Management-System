@@ -4,6 +4,7 @@
  *   POST   /api/admin/users
  *   PATCH  /api/admin/users/:id        update role / base / active
  *   DELETE /api/admin/users/:id
+ *   POST   /api/admin/clear-data      wipe all stock data, keep reference data
  *   GET    /api/admin/audit            audit log with filters
  */
 const express = require('express');
@@ -95,6 +96,60 @@ router.delete('/users/:id', (req, res, next) => {
     db.prepare('DELETE FROM users WHERE id = ?').run(id);
     logAudit({ user: req.user, action: 'USER_DELETED', entity: 'user', entityId: id, method: 'DELETE', endpoint: `/api/admin/users/${id}`, status: 200, ip: req.ip, details: { email: existing.email } });
     res.json({ message: `User ${existing.email} deleted.` });
+  } catch (e) { next(e); }
+});
+
+/* -------------------------- clear data ----------------------------- */
+/**
+ * Wipes every stock transaction so the system can be re-entered from
+ * scratch.  Reference data is deliberately left alone: the login
+ * accounts, the bases and the equipment catalogue are what make the
+ * system usable, so clearing them would lock everyone out and empty
+ * every dropdown.
+ *
+ * Intended for standing up a real deployment with real figures instead of
+ * the sample data.  Everything runs in one transaction, so a failure
+ * halfway through rolls back rather than leaving a half-cleared database.
+ */
+const CLEARED = [
+  ['expenditures', 'expenditures'],
+  ['assignments', 'assignments'],
+  ['transfers', 'transfers'],
+  ['purchases', 'purchases'],
+  ['opening_balances', 'opening balances'],
+  ['stock_ledger', 'stock ledger rows']
+];
+
+router.post('/clear-data', (req, res, next) => {
+  try {
+    // Explicit confirmation phrase: this is destructive and irreversible.
+    if (String(req.body?.confirm || '').trim().toUpperCase() !== 'DELETE ALL DATA') {
+      throw Object.assign(new Error('Type DELETE ALL DATA to confirm. Nothing was changed.'), { status: 400 });
+    }
+
+    const before = {};
+    for (const [table] of CLEARED) before[table] = db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get().n;
+    const auditBefore = db.prepare('SELECT COUNT(*) AS n FROM audit_logs').get().n;
+
+    const wipe = db.transaction(() => {
+      // Child rows first so foreign keys stay satisfied.
+      for (const [table] of CLEARED) db.prepare(`DELETE FROM ${table}`).run();
+      db.prepare('DELETE FROM audit_logs').run();
+      // Start the reference numbers again at 0001.
+      for (const [table] of CLEARED) {
+        db.prepare("DELETE FROM sqlite_sequence WHERE name = ?").run(table);
+      }
+    });
+    wipe();
+
+    logAudit({ user: req.user, action: 'DATA_CLEARED', entity: 'system', method: 'POST', endpoint: '/api/admin/clear-data', status: 200, ip: req.ip, details: { removed: before, audit_rows_removed: auditBefore } });
+
+    const total = Object.values(before).reduce((a, b) => a + b, 0);
+    res.json({
+      message: `All stock data cleared (${total} record(s) removed). Logins, bases and equipment types were kept. You can now enter your own figures.`,
+      removed: before,
+      audit_rows_removed: auditBefore
+    });
   } catch (e) { next(e); }
 });
 

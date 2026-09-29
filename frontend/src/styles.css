@@ -378,6 +378,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .alert-error { background: var(--out-bg);  color: var(--out);  border-color: #f5c6c6; }
 .alert-ok    { background: var(--in-bg);   color: var(--in);   border-color: #bfe5cd; }
 .alert-info  { background: var(--info-bg); color: var(--info); border-color: #c7d7f7; }
+.alert-danger { background: var(--out-bg); color: var(--out); border-color: #f5c6c6; border-left: 4px solid var(--out); }
 .alert-warn  { background: var(--warn-bg); color: var(--warn); border-color: #f0dcb4; }
 
 /* ---------------------------- toasts ------------------------------- */

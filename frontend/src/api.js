@@ -103,5 +103,6 @@ export const api = {
   userCreate:  (b)          => request('POST', '/admin/users', b),
   userUpdate:  (id, b)      => request('PATCH', `/admin/users/${id}`, b),
   userDelete:  (id)         => request('DELETE', `/admin/users/${id}`),
+  clearAllData: (confirm)   => request('POST', '/admin/clear-data', { confirm }),
   audit:       (f)          => request('GET', `/admin/audit${qs(f)}`)
 };
