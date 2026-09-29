@@ -80,6 +80,9 @@ export const api = {
   purchaseCreate:(b)        => request('POST', '/purchases', b),
   purchaseSummary:(f)       => request('GET', `/purchases/summary${qs(f)}`),
 
+  openingBalances:   (f)        => request('GET', `/opening-balances${qs(f)}`),
+  openingBalanceCreate:(b)      => request('POST', '/opening-balances', b),
+
   transfers:     (f)        => request('GET', `/transfers${qs(f)}`),
   transferCreate:(b)        => request('POST', '/transfers', b),
   transferReceive:(id,b)    => request('POST', `/transfers/${id}/receive`, b),

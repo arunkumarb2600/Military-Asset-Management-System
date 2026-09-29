@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Purchases from './pages/Purchases';
+import OpeningBalances from './pages/OpeningBalances';
 import Transfers from './pages/Transfers';
 import Assignments from './pages/Assignments';
 import Users from './pages/Users';
@@ -46,6 +47,7 @@ export default function App() {
       <Route element={<Protected><Layout /></Protected>}>
         <Route index element={<Dashboard />} />
         <Route path="purchases" element={<Purchases />} />
+        <Route path="opening-balances" element={<OpeningBalances />} />
         <Route path="transfers" element={<Transfers />} />
         <Route path="assignments" element={<Assignments />} />
         <Route

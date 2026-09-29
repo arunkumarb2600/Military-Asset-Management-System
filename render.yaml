@@ -36,6 +36,12 @@ services:
         value: "4000"
       - key: DB_FILE
         value: database/military_assets.db
+      - key: DEMO_DATA
+        # false = start EMPTY but usable: login accounts, bases and the
+        # equipment catalogue only, with no sample stock data. The officer
+        # then enters their own figures through the app.
+        # Set to true to load the full demo dataset instead.
+        value: "false"
       - key: JWT_EXPIRES_IN
         value: 8h
       - key: CORS_ORIGIN

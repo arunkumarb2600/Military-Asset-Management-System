@@ -179,6 +179,7 @@ const check = (name, ok, extra) => {
 
     console.log('\n== Other pages ==');
     for (const [path, marker] of [
+      ['/opening-balances', 'Opening stock on record'],
       ['/purchases', 'Purchase history'],
       ['/transfers', 'Transfer history'],
       ['/assignments', 'Assignment history'],
@@ -200,6 +201,20 @@ const check = (name, ok, extra) => {
     }
 
     console.log('\n== Modal forms ==');
+    await b.goto(APP + '/purchases');
+    await b.goto(APP + '/opening-balances');
+    await b.waitFor(`[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Add opening stock'))`, { label: 'opening balances page' });
+    await b.evalJs(`[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Add opening stock')).click()`);
+    await b.waitFor(`document.querySelector('.modal select')`, { label: 'opening modal' });
+    r = await b.evalJs(`document.querySelectorAll('.modal .form-grid .field').length`);
+    check('opening balance form is the simple 4-field layout', r.value === 5, r);
+    await b.evalJs(`document.querySelector('.modal button[form="opening-form"]').click()`);
+    await b.waitFor(`document.querySelector('.modal .alert-err, .modal [class*="error"]')`, { label: 'opening form validation' })
+      .catch(() => {});
+    r = await b.evalJs(`!!document.querySelector('.modal')`);
+    check('opening balance form blocks an empty submit', r.value === true, r);
+    await b.evalJs(`document.querySelector('.modal .btn').click()`);
+
     await b.goto(APP + '/purchases');
     await b.waitFor(`[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Record purchase'))`, { label: 'purchases page' });
     await b.evalJs(`[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Record purchase')).click()`);

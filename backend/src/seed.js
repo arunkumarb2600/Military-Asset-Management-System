@@ -2,11 +2,17 @@
  * Demo data seeder.  Idempotent: does nothing if users already exist.
  *   npm run seed     -> seed only if empty
  *   npm run reset    -> wipe every table and re-seed
+ *
+ * DEMO_DATA=false starts the system EMPTY but usable: the login accounts,
+ * the bases and the equipment catalogue are created, and nothing else.  A
+ * real deployment sets this so the officer can enter their own figures
+ * instead of seeing sample data.
  */
 const bcrypt = require('bcryptjs');
 const { db, postLedger } = require('./db');
 
 const force = process.argv.includes('--force');
+const EMPTY = String(process.env.DEMO_DATA ?? 'true').toLowerCase() === 'false';
 
 /* ------------------------- reference data -------------------------- */
 const BASES = [
@@ -79,6 +85,16 @@ function seed() {
   const logKabul = userId['logistics.kabul'];
   const logKandahar = userId['logistics.kandahar'];
   const cmdKhost = userId['commander.khost'];
+
+  /* ---------------- empty mode: reference data only ------------------ */
+  // Everything needed to log in and use the forms now exists (accounts,
+  // bases, equipment types) but there is no stock data. The officer enters
+  // their own opening balances, purchases, transfers, assignments and
+  // expenditures through the app.
+  if (EMPTY) {
+    console.log('DEMO_DATA=false - created login accounts, bases and equipment types only. No stock data.');
+    return;
+  }
 
   /* ---------- 1. Opening balances (day-one verified stock) ---------- */
   const opening = [

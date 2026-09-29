@@ -5,6 +5,7 @@ import { useAuth } from '../auth';
 const NAV = [
   { section: 'Operations' },
   { to: '/',          label: 'Dashboard',              icon: '▦', end: true },
+  { to: '/opening-balances', label: 'Opening Stock',    icon: '▣' },
   { to: '/purchases', label: 'Purchases',              icon: '＋' },
   { to: '/transfers', label: 'Transfers',              icon: '⇄' },
   { to: '/assignments', label: 'Assignments & Expenditures', icon: '👤' },
