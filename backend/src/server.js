@@ -52,6 +52,29 @@ app.get('/api/health', (req, res) =>
   res.json({ status: 'ok', service: 'MAMS API', database: path.basename(DB_PATH), time: new Date().toISOString() })
 );
 
+// Opening the API address in a browser is the first thing most people try,
+// so make it obvious what this is and where to go instead of returning a bare
+// "No route for GET /" JSON error.
+app.get('/', (req, res) =>
+  res.json({
+    service: 'Military Asset Management System - API',
+    status: 'running',
+    message: 'This is the backend. The web interface is served separately.',
+    try: {
+      health: '/api/health',
+      login: 'POST /api/auth/login  { "email": "...", "password": "..." }',
+      endpoints: [
+        '/api/auth/login', '/api/auth/me', '/api/meta/bases',
+        '/api/meta/equipment-types', '/api/meta/permissions',
+        '/api/dashboard/summary', '/api/dashboard/net-movement',
+        '/api/dashboard/balances', '/api/dashboard/movements',
+        '/api/opening-balances', '/api/purchases', '/api/transfers',
+        '/api/assignments', '/api/expenditures', '/api/admin/users', '/api/admin/audit'
+      ]
+    }
+  })
+);
+
 /* ----------------------------- routes ------------------------------ */
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/meta', require('./routes/meta'));
